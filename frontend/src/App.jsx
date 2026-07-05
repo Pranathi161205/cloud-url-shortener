@@ -20,7 +20,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/shorten", {
+      const response = await axios.post("/api/shorten", {
         url: url,
       });
 
@@ -36,7 +36,7 @@ function App() {
 
   const fetchUrls = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/urls");
+      const response = await axios.get("/api/urls");
       setUrls(response.data);
     } catch (error) {
       console.log(error);
@@ -53,7 +53,7 @@ function App() {
   };
 
   const copyUrl = async (shortCode) => {
-    const fullUrl = `http://localhost:8000/${shortCode}`;
+    const fullUrl = `/${shortCode}`;
     try {
       await navigator.clipboard.writeText(fullUrl);
       setCopiedShortCode(shortCode);
