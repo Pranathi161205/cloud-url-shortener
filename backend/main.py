@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse
 
 from database import table
@@ -22,7 +22,9 @@ def home():
 
 
 @app.post("/api/shorten")
-def shorten_url(request: URLRequest):
+def shorten_url(request: URLRequest, http_request: Request):
+    if "/api/" in request.url:
+        raise HTTPException(status_code=400, detail="Please enter a valid website URL")
 
     short_code = generate_short_code()
 
@@ -34,9 +36,11 @@ def shorten_url(request: URLRequest):
         }
     )
 
+    base_url = str(http_request.base_url).rstrip("/")
+
     return {
         "shortCode": short_code,
-        "shortUrl": f"http://localhost:8000/{short_code}"
+        "shortUrl": f"{base_url}/{short_code}"
     }
 
 @app.get("/api/urls")

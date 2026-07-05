@@ -11,7 +11,12 @@ function App() {
   const [copiedShortCode, setCopiedShortCode] = useState(null);
 
   const formatUrl = (value) => {
-    return value.length > 35 ? `${value.substring(0, 35)}...` : value;
+    const cleaned = value
+      .replace(/^https?:\/\//, "")
+      .replace(/^www\./, "")
+      .replace(/\/$/, "");
+
+    return cleaned.length > 35 ? `${cleaned.substring(0, 35)}...` : cleaned;
   };
 
   const shortenUrl = async () => {
@@ -37,15 +42,18 @@ function App() {
   const fetchUrls = async () => {
     try {
       const response = await axios.get("/api/urls");
-      setUrls(response.data);
+      console.log("Response:", response.data);
+      console.log("Is Array:", Array.isArray(response.data));
+      setUrls(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.log(error);
+      setUrls([]);
     }
   };
 
   const deleteUrl = async (shortCode) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/url/${shortCode}`);
+      await axios.delete(`/api/url/${shortCode}`);
       fetchUrls();
     } catch (error) {
       console.log(error);
@@ -53,7 +61,7 @@ function App() {
   };
 
   const copyUrl = async (shortCode) => {
-    const fullUrl = `/${shortCode}`;
+    const fullUrl = `${window.location.origin}/${shortCode}`;
     try {
       await navigator.clipboard.writeText(fullUrl);
       setCopiedShortCode(shortCode);
@@ -118,12 +126,12 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {urls.map((item) => (
+                {Array.isArray(urls) && urls.map((item) => (
                   <tr key={item.shortCode}>
                     <td title={item.originalUrl}>{formatUrl(item.originalUrl)}</td>
                     <td>
                       <a
-                        href={`http://localhost:8000/${item.shortCode}`}
+                        href={`${window.location.origin}/${item.shortCode}`}
                         target="_blank"
                         rel="noreferrer"
                         className="short-link"
