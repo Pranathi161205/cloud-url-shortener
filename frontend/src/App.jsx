@@ -80,7 +80,7 @@ function App() {
       <div className="card">
         <div className="brand">
           <FaLink className="brand-icon" />
-          <h1>CloudURL</h1>
+          <h1>CloudURL🚀</h1>
         </div>
 
         <p className="subtitle">
